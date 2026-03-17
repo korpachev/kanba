@@ -12,16 +12,21 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-# Dummy values for build-time only (Next.js compiles API routes at build)
+# Real NEXT_PUBLIC_ values (baked into client bundle at build time)
+ARG NEXT_PUBLIC_SUPABASE_URL
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_dummy
+ENV NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+# Server-side dummy values (only needed to pass build, overridden at runtime)
 ENV STRIPE_SECRET_KEY=sk_test_dummy_build_only
-ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_dummy_build_only
 ENV STRIPE_WEBHOOK_SECRET=whsec_dummy_build_only
-ENV NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder
 ENV SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder
 ENV NEXTAUTH_SECRET=build-only-secret
 ENV NEXTAUTH_URL=http://localhost:3000
-ENV NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ENV DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy
 ENV DIRECT_URL=postgresql://dummy:dummy@localhost:5432/dummy
 RUN npx prisma generate
